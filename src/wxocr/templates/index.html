@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WXOCR - 微信OCR服务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .content {
+            display: grid;
+            gap: 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .api-endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .feature-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0.25rem;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 WXOCR</h1>
+            <p>基于微信OCR引擎的图像文字识别服务</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>📖 项目简介</h2>
+                <p>wxocr是一个基于Flask的微信OCR服务，提供HTTP API接口进行图像文字识别。与原项目相比，增加了API密钥验证机制，防止部署于互联网时被恶意调用。</p>
+
+                <h3 style="margin-top: 1.5rem; color: #667eea;">主要特性</h3>
+                <ul class="feature-list">
+                    <li><strong>OCR识别</strong>：基于微信OCR引擎的图像文字识别</li>
+                    <li><strong>API密钥认证</strong>：支持可选的API密钥验证机制</li>
+                    <li><strong>HTTP接口</strong>：RESTful API设计，易于集成</li>
+                    <li><strong>原始格式</strong>：OCR接口返回格式与微信原始数据一致</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🚀 快速开始</h2>
+
+                <h3>1. 安装依赖</h3>
+                <div class="code-block">
+# 克隆项目
+git clone https://github.com/unclemcz/wxocr.git
+cd wxocr
+
+# 使用PDM安装依赖
+pdm install
+                </div>
+
+                <h3>2. 初始化数据库</h3>
+                <div class="code-block">
+pdm run flask --app wxocr init-db
+                </div>
+
+                <h3>3. 运行服务</h3>
+                <div class="code-block">
+pdm run flask --app wxocr run --debug
+                </div>
+
+                <p><strong>注意</strong>：需要单独安装微信OCR引擎，即<a href="https://linux.weixin.qq.com/" target="_blank">微信（Linux）</a>，默认路径在<code>/opt/wechat</code></p>
+            </div>
+
+            <div class="card">
+                <h2>📡 API接口</h2>
+
+                <h3>OCR识别接口</h3>
+                <div class="api-endpoint">
+                    POST http://localhost:5000/ocr
+                </div>
+
+                <h4>请求参数</h4>
+                <div class="code-block">
+{
+    "key": "your_api_key",      // 可选：API密钥
+    "image": "base64_image_data" // 必需：Base64编码的图像数据
+}
+                </div>
+
+                <h4>响应格式</h4>
+                <div class="code-block">
+{
+    "imgpath": "temp/demo.png",
+    "errcode": 0,
+    "width": 173,
+    "height": 46,
+    "ocr_response": [
+        {
+            "text": "识别的文字内容",
+            "left": 8.379687309265137,
+            "top": 11.623435020446777,
+            "right": 168.67495727539062,
+            "bottom": 40.00624084472656,
+            "rate": 0.9961945414543152
+        }
+    ]
+}
+                </div>
+
+                <h4>使用示例</h4>
+                <div class="code-block">
+curl -X POST http://localhost:5000/ocr \
+     -H "Content-Type: application/json" \
+     -d '{"key": "your_api_key", "image": "BASE64_ENCODED_IMAGE_DATA"}'
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>🔑 API密钥管理</h2>
+
+                    <h4>添加API密钥</h4>
+                    <div class="code-block">pdm run flask --app wxocr add-key --appname=your_app_name</div>
+
+                    <h4>删除API密钥</h4>
+                    <div class="code-block">pdm run flask --app wxocr del-key --appname=your_app_name</div>
+
+                    <h4>列出所有API密钥</h4>
+                    <div class="code-block">pdm run flask --app wxocr list-keys</div>
+
+                    <h4>清空所有API密钥</h4>
+                    <div class="code-block">pdm run flask --app wxocr clear-keys</div>
+
+                    <p style="margin-top: 1rem; color: #e74c3c;">
+                        ⚠️ 警告：清空后接口将允许公开访问，请谨慎操作！
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h2>🛠️ 系统要求</h2>
+                    <ul class="feature-list">
+                        <li>Python 3.13+</li>
+                        <li>Flask</li>
+                        <li>PDM包管理器</li>
+                        <li>微信OCR引擎</li>
+                    </ul>
+
+                    <h3 style="margin-top: 1.5rem;">授权逻辑</h3>
+                    <p>1. <strong>公开访问模式</strong>：如果授权码列表为空，则默认可以公开访问</p>
+                    <p>2. <strong>授权访问模式</strong>：如果授权码列表不为空，则验证传入的授权码</p>
+                    <p>3. <strong>灵活配置</strong>：可以随时切换公开/授权访问模式</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>❗ 常见问题</h2>
+
+                <h3>微信OCR引擎初始化失败</h3>
+                <p>确认微信已正确安装在 <code>/opt/wechat</code></p>
+
+                <h3>数据库连接错误</h3>
+                <p>确认已执行 <code>init-db</code> 命令初始化数据库</p>
+
+                <h3>API密钥验证失败</h3>
+                <p>使用 <code>list-keys</code> 命令确认密钥是否存在</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>基于 <a href="https://github.com/golangboy/wxocr" target="_blank">golangboy/wxocr</a> Fork 项目开发 | MIT License</p>
+            <p>需要安装 <a href="https://linux.weixin.qq.com/" target="_blank">微信（Linux）</a> 作为OCR引擎</p>
+        </div>
+    </div>
+</body>
+</html>

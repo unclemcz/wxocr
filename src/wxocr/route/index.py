@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import  Blueprint
+from flask import Blueprint, render_template
 
 
 index = Blueprint('index',__name__,url_prefix='/')
@@ -8,4 +8,4 @@ index = Blueprint('index',__name__,url_prefix='/')
 @index.route('/', methods=['GET'])
 @index.route('/index', methods=['GET'])
 def main():
-    return '首页'
+    return render_template('index.html')

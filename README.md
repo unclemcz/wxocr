@@ -10,7 +10,7 @@
 
 wxocr是一个基于Flask的微信OCR服务，提供HTTP API接口进行图像文字识别。项目包含以下特性：
 
-- **OCR识别**：基于微信OCR引擎的图像文字识别
+- **OCR识别**：基于微信OCR引擎的图像文字识别，依赖[wechat-ocr](https://github.com/swigger/wechat-ocr)
 - **API密钥认证**：支持可选的API密钥验证机制
 - **HTTP接口**：RESTful API设计，易于集成
 

@@ -19,6 +19,7 @@ wxocr是一个基于Flask的微信OCR服务，提供HTTP API接口进行图像�
 - Python 3.13+
 - Flask
 - PDM包管理器
+- [wechat-ocr](https://github.com/swigger/wechat-ocr)
 - 微信OCR引擎（需安装[微信（Linux）](https://linux.weixin.qq.com/)，默认路径在`/opt/wechat`）
 
 

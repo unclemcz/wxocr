@@ -150,3 +150,6 @@ pdm run flask --app wxocr init-db
 
 3. **API密钥验证失败**
    - 使用 `list-keys` 命令确认密钥是否存在
+
+## docker镜像构建
+参考[DOCKER.md](./DOCKER.md)

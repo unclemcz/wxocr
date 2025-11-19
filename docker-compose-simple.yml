@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  wxocr:
+    build: .
+    container_name: wxocr-service
+    ports:
+      - "5000:5000"
+    volumes:
+      # 数据持久化
+      - wxocr_data:/app/data
+      # 临时文件目录
+      - wxocr_temp:/app/temp
+    environment:
+      - FLASK_ENV=production
+      - DATABASE=/app/data/wxocr.sqlite
+    restart: unless-stopped
+    networks:
+      - wxocr_network
+
+volumes:
+  wxocr_data:
+    driver: local
+  wxocr_temp:
+    driver: local
+
+networks:
+  wxocr_network:
+    driver: bridge

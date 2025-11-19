@@ -1,0 +1,72 @@
+# Git相关
+.git
+.gitignore
+
+# Python相关
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# PDM相关
+.pdm-python
+.pdm-build
+__pypackages__
+
+# IDE和编辑器
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 操作系统相关
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 项目特定
+temp/
+data/
+*.sqlite
+*.db
+
+# Docker相关
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# 微信安装包（需要复制到镜像中）
+# WeChatLinux_x86_64.deb
+
+# 文档和测试
+tests/
+
+# 临时文件
+*.tmp
+*.bak
+*.old
+
+# 日志文件
+logs/
+*.log

@@ -1,0 +1,19 @@
+[project]
+name = "wxocr"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "mcz", email = "unclemcz@qq.com"},
+]
+dependencies = ["flask>=3.1.2", "python-dotenv>=1.2.1", "Watchdog>=6.0.0"]
+requires-python = ">=3.13"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true

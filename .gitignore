@@ -1,0 +1,8 @@
+*.pyc
+*~
+__pycache__
+.pdm-python
+.pdm-build
+.venv
+tests
+

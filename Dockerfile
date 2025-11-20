@@ -28,8 +28,6 @@ RUN  dpkg -i /tmp/WeChatLinux_x86_64.deb || apt-get install -f -y \
     && rm -rf /tmp/WeChatLinux_x86_64.deb \
     && rm -rf /var/lib/apt/lists/*
 
-RUN  rm -rf /var/lib/apt/lists/*
-
 
 # 创建数据目录和临时文件目录
 RUN mkdir -p /app/data /app/temp

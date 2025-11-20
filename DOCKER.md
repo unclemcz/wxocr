@@ -27,16 +27,22 @@ docker run -d   --name wxocr   -p 5000:5000   wxocr:latest
 
 容器运行后，可以通过exec命令管理API密钥：
 
+
+```bash
+# 先进入容器
+docker exec -it <容器名或容器ID> bash
+```
+
 ```bash
 # 添加API密钥
-docker exec -it wxocr-service pdm run flask --app src/wxocr add-key --appname=myapp
+pdm run flask --app wxocr add-key --appname=myapp
 
 # 列出所有API密钥
-docker exec -it wxocr-service pdm run flask --app src/wxocr list-keys
+pdm run flask --app wxocr list-keys
 
 # 删除API密钥
-docker exec -it wxocr-service pdm run flask --app src/wxocr del-key --appname=myapp
+pdm run flask --app wxocr del-key --appname=myapp
 
 # 清空所有API密钥
-docker exec -it wxocr-service pdm run flask --app src/wxocr clear-keys
+pdm run flask --app wxocr clear-keys
 ```

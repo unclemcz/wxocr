@@ -11,13 +11,6 @@ ENV PYTHONUNBUFFERED=1 \
     FLASK_ENV=production \
     DATABASE=/app/data/wxocr.sqlite
 
-# 安装系统依赖
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget \
-    gnupg \
-    python3-pdm \
-    && rm -rf /var/lib/apt/lists/*
 
 # 安装PDM
 RUN pip install --no-cache-dir pdm
@@ -31,24 +24,12 @@ COPY src/ ./src/
 RUN pdm install --prod 
 
 # 安装微信Linux和依赖
-RUN apt-get update && apt-get install -y \
-    libgtk-3-0 \
-    libnotify4 \
-    libnss3 \
-    libxss1 \
-    libxtst6 \
-    xdg-utils \
-    libatspi2.0-0 \
-    libdrm2 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    libgbm1 \
-    libxkbcommon0 \
-    libasound2 \
-    && dpkg -i /tmp/WeChatLinux_x86_64.deb || apt-get install -f -y \
+RUN  dpkg -i /tmp/WeChatLinux_x86_64.deb || apt-get install -f -y \
     && rm -rf /tmp/WeChatLinux_x86_64.deb \
     && rm -rf /var/lib/apt/lists/*
+
+RUN  rm -rf /var/lib/apt/lists/*
+
 
 # 创建数据目录和临时文件目录
 RUN mkdir -p /app/data /app/temp

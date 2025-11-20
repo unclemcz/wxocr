@@ -23,11 +23,29 @@ COPY src/ ./src/
 # 安装Python依赖
 RUN pdm install --prod 
 
-# 安装微信Linux和依赖
-RUN  dpkg -i /tmp/WeChatLinux_x86_64.deb || apt-get install -f -y \
+# 安装系统依赖和微信Linux
+RUN apt-get update && apt-get install -y \
+    fonts-noto-cjk \
+    libglib2.0-0 \
+    libstdc++6 \
+    libgcc-s1 \
+    libc6 \
+    libz1 \
+    libexpat1 \
+    && dpkg -i /tmp/WeChatLinux_x86_64.deb \
+    && apt-get install -f -y \
     && rm -rf /tmp/WeChatLinux_x86_64.deb \
-    && rm -rf /var/lib/apt/lists/*
-
+    && rm -rf /var/lib/apt/lists/* \
+    # 清理微信不必要的文件以减小镜像大小
+    && echo "开始清理微信不必要的文件..." \
+    && rm -rf /opt/wechat/RadiumWMPF \
+    && rm -rf /opt/wechat/vlc_plugins \
+    && rm -rf /opt/wechat/XEditor \
+    && rm -rf /opt/wechat/XFile \
+    && rm -rf /opt/wechat/wechat \
+    && rm -rf /opt/wechat/libvoipCodec.so \
+    && rm -rf /opt/wechat/libWxVcodec2Dyn.so \
+    && echo "微信文件清理完成"
 
 # 创建数据目录和临时文件目录
 RUN mkdir -p /app/data /app/temp

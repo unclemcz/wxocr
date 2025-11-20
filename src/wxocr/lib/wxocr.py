@@ -14,12 +14,12 @@ def ocr(base64_img):
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir)
         if not base64_img:
-            return jsonify({"error": "No base64 image data provided"}), 400
+            return jsonify({"error": "No base64 image data provided"})
         # Extract image type from base64 data
         image_type, base64_img = extract_image_type(base64_img)
         if not image_type:
             # 返回json错误信息
-            return jsonify({"error": "Invalid base64 image data"}), 400
+            return jsonify({"error": "Invalid base64 image data"})
         # Generate unique filename and save image
         filename = os.path.join(temp_dir, f"{str(uuid.uuid4())}.{image_type}")
         try:
@@ -37,7 +37,7 @@ def ocr(base64_img):
                 os.remove(filename)
 
     except Exception as e:
-        return jsonify({"error": str(e)}),500
+        return jsonify({"error": str(e)})
 
 
 def extract_image_type(base64_data):

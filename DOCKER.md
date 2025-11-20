@@ -18,7 +18,7 @@ docker build -t wxocr:latest .
 2. **运行容器**：
 
 ```bash
-docker run -d   --name wxocr-service   -p 5000:5000   wxocr:latest
+docker run -d   --name wxocr   -p 5000:5000   wxocr:latest
 ```
 
 ## 管理命令

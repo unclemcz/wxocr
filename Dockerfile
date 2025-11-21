@@ -57,4 +57,4 @@ RUN pdm run flask --app src/wxocr init-db
 EXPOSE 5000
 
 # 设置启动命令
-CMD ["pdm", "run", "flask", "--app", "src.wxocr", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["pdm", "run", "gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "src.wxocr:create_app()"]

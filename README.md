@@ -45,6 +45,10 @@ pdm run flask --app wxocr init-db
 ```bash
 # 开发模式运行
 pdm run flask --app wxocr run --debug
+# 正常模式运行
+pdm run flask --app wxocr run
+# gunicorn运行
+pdm run gunicorn --bind 0.0.0.0:5000 --workers 2 "wxocr:create_app()"
 ```
 
 ## API接口

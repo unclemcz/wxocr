@@ -1,4 +1,5 @@
 # wxocr
+**注意：CPU需要支持avx2，否则服务无法运行**
 
 提供微信OCR功能封装，HTTP接口调用。与[Fork的原项目](https://github.com/golangboy/wxocr)相比，区别如下：
 

@@ -60,8 +60,8 @@ pdm run gunicorn --bind 0.0.0.0:5000 --workers 2 "wxocr:create_app()"
 **请求参数：**
 ```json
 {
-    "key": "your_api_key",      // 可选：API密钥（如果启用了密钥验证）
-    "image": "base64_image_data" // 必需：Base64编码的图像数据
+    "key": "your_api_key",
+    "image": "base64_image_data" 
 }
 ```
 
@@ -138,7 +138,7 @@ pdm run flask --app wxocr clear-keys
 # 输出示例：API keys cleared.
 ```
 
-#### 5. 初始化（清空测试数据）授权码
+#### 5. 初始化（清空测试数据）
 ```bash
 pdm run flask --app wxocr init-db
 # 输出示例：Initialized the database.

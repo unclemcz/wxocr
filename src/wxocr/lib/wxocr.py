@@ -14,7 +14,7 @@ if not os.path.exists(wxocr_path):
 if not os.path.exists(wechat_path):
     raise RuntimeError(f"WeChat path not found: {wechat_path}")
 
-wcocr.init("/opt/wechat/wxocr", "/opt/wechat")
+wcocr.init(wxocr_path, wechat_path)
 
 
 def ocr(base64_img):

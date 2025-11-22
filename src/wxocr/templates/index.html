@@ -22,7 +22,7 @@
             padding: 20px;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
             color: white;
             text-align: center;
             padding: 2rem 1rem;
@@ -52,13 +52,13 @@
             transform: translateY(-2px);
         }
         .card h2 {
-            color: #667eea;
+            color: #28a745;
             margin-bottom: 1rem;
             font-size: 1.5rem;
         }
         .api-endpoint {
             background: #f8f9fa;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #28a745;
             padding: 1rem;
             margin: 1rem 0;
             font-family: 'Courier New', monospace;
@@ -83,7 +83,7 @@
         }
         .feature-list li:before {
             content: "✓";
-            color: #667eea;
+            color: #28a745;
             font-weight: bold;
             margin-right: 0.5rem;
         }
@@ -94,7 +94,7 @@
         }
         .btn {
             display: inline-block;
-            background: #667eea;
+            background: #28a745;
             color: white;
             padding: 0.5rem 1rem;
             text-decoration: none;
@@ -103,7 +103,7 @@
             transition: background 0.2s;
         }
         .btn:hover {
-            background: #5a6fd8;
+            background: #218838;
         }
         .footer {
             text-align: center;
@@ -125,16 +125,25 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔍 WXOCR</h1>
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                <img src="{{ url_for('static', filename='wxocr-icon.svg') }}" alt="WXOCR Icon" style="width: 80px; height: 80px; margin-right: 1rem;">
+                <h1 style="margin: 0;">WXOCR</h1>
+            </div>
             <p>基于微信OCR引擎的图像文字识别服务</p>
+            <p style="color: #ffcc00; font-weight: bold; margin-top: 1rem;">⚠️ 注意：CPU需要支持avx2，否则服务无法运行</p>
         </div>
 
         <div class="content">
             <div class="card">
                 <h2>📖 项目简介</h2>
-                <p>wxocr是一个基于Flask的微信OCR服务，提供HTTP API接口进行图像文字识别。与原项目相比，增加了API密钥验证机制，防止部署于互联网时被恶意调用。</p>
+                <p>wxocr是一个基于Flask的微信OCR服务，提供HTTP API接口进行图像文字识别。与Fork的原项目相比，区别如下：</p>
+                <ul style="list-style: disc; margin-left: 2rem; margin-top: 1rem;">
+                    <li>增加授权key验证，防止部署于互联网时被恶意调用</li>
+                    <li>OCR接口返回格式与微信原始数据一致</li>
+                    <li>需要单独安装微信OCR引擎，即微信（Linux），默认路径在<code>/opt/wechat</code></li>
+                </ul>
 
-                <h3 style="margin-top: 1.5rem; color: #667eea;">主要特性</h3>
+                <h3 style="margin-top: 1.5rem; color: #28a745;">主要特性</h3>
                 <ul class="feature-list">
                     <li><strong>OCR识别</strong>：基于微信OCR引擎的图像文字识别</li>
                     <li><strong>API密钥认证</strong>：支持可选的API密钥验证机制</li>
@@ -144,29 +153,45 @@
             </div>
 
             <div class="card">
-                <h2>🚀 快速开始</h2>
+                <h2>🚀 安装与运行</h2>
 
                 <h3>1. 安装依赖</h3>
                 <div class="code-block">
-# 克隆项目
-git clone https://github.com/unclemcz/wxocr.git
+# 克隆项目<br>
+git clone https://github.com/unclemcz/wxocr.git<br>
 cd wxocr
+                </div>
 
-# 使用PDM安装依赖
+                <div class="code-block" style="margin-top: 0.5rem;">
+# 使用PDM安装依赖<br>
 pdm install
                 </div>
 
-                <h3>2. 初始化数据库</h3>
+                <h3>2. 初始化（清空测试数据）</h3>
                 <div class="code-block">
+# 初始化数据库表结构<br>
 pdm run flask --app wxocr init-db
                 </div>
 
                 <h3>3. 运行服务</h3>
                 <div class="code-block">
+# 开发模式运行<br>
 pdm run flask --app wxocr run --debug
                 </div>
 
-                <p><strong>注意</strong>：需要单独安装微信OCR引擎，即<a href="https://linux.weixin.qq.com/" target="_blank">微信（Linux）</a>，默认路径在<code>/opt/wechat</code></p>
+                <div class="code-block" style="margin-top: 0.5rem;">
+# 正常模式运行<br>
+pdm run flask --app wxocr run
+                </div>
+
+                <div class="code-block" style="margin-top: 0.5rem;">
+# gunicorn运行<br>
+pdm run gunicorn --bind 0.0.0.0:5000 --workers 2 "wxocr:create_app()"
+                </div>
+
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
+                    <strong>⚠️ 重要提醒：</strong>需要单独安装微信OCR引擎，即<a href="https://linux.weixin.qq.com/" target="_blank" style="color: #856404;">微信（Linux）</a>，默认路径在<code>/opt/wechat</code>
+                </div>
             </div>
 
             <div class="card">
@@ -180,8 +205,8 @@ pdm run flask --app wxocr run --debug
                 <h4>请求参数</h4>
                 <div class="code-block">
 {
-    "key": "your_api_key",      // 可选：API密钥
-    "image": "base64_image_data" // 必需：Base64编码的图像数据
+    "key": "your_api_key",      
+    "image": "base64_image_data" 
 }
                 </div>
 
@@ -235,12 +260,13 @@ curl -X POST http://localhost:5000/ocr \
                 </div>
 
                 <div class="card">
-                    <h2>🛠️ 系统要求</h2>
+                    <h2>🛠️ 基于以下条件开发</h2>
                     <ul class="feature-list">
                         <li>Python 3.13+</li>
                         <li>Flask</li>
                         <li>PDM包管理器</li>
-                        <li>微信OCR引擎</li>
+                        <li>wechat-ocr</li>
+                        <li>微信OCR引擎（需安装微信（Linux），默认路径在<code>/opt/wechat</code>）</li>
                     </ul>
 
                     <h3 style="margin-top: 1.5rem;">授权逻辑</h3>
@@ -251,7 +277,7 @@ curl -X POST http://localhost:5000/ocr \
             </div>
 
             <div class="card">
-                <h2>❗ 常见问题</h2>
+                <h2>❓ 故障排除</h2>
 
                 <h3>微信OCR引擎初始化失败</h3>
                 <p>确认微信已正确安装在 <code>/opt/wechat</code></p>
@@ -261,6 +287,9 @@ curl -X POST http://localhost:5000/ocr \
 
                 <h3>API密钥验证失败</h3>
                 <p>使用 <code>list-keys</code> 命令确认密钥是否存在</p>
+
+                <h3 style="margin-top: 2rem;">🐳 docker镜像构建</h3>
+                <p>参考 <a href="https://github.com/unclemcz/wxocr/blob/master/DOCKER.md" target="_blank">DOCKER.md</a></p>
             </div>
         </div>
 

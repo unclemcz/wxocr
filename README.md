@@ -36,7 +36,7 @@ cd wxocr
 pdm install
 ```
 
-### 2. 初始化（清空测试数据）授权码
+### 2. 初始化（清空测试数据）
 ```bash
 # 初始化数据库表结构
 pdm run flask --app wxocr init-db

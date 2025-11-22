@@ -4,6 +4,16 @@ import base64
 import json
 from . import wcocr
 
+
+
+wxocr_path = "/opt/wechat/wxocr"
+wechat_path = "/opt/wechat"
+
+if not os.path.exists(wxocr_path):
+    raise RuntimeError(f"WeChat OCR path not found: {wxocr_path}")
+if not os.path.exists(wechat_path):
+    raise RuntimeError(f"WeChat path not found: {wechat_path}")
+
 wcocr.init("/opt/wechat/wxocr", "/opt/wechat")
 
 

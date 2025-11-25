@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR识别 - WXOCR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .upload-area {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        .upload-area.uploaded {
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        .upload-box {
+            background: white;
+            border: 3px dashed #28a745;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 300px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-box:hover {
+            border-color: #20c997;
+            background: #f8fff9;
+            transform: translateY(-2px);
+        }
+        .upload-box input[type="file"] {
+            display: none;
+        }
+        .upload-icon {
+            font-size: 3rem;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+        .upload-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .result-area {
+            display: none;
+            flex: 1;
+            gap: 2rem;
+            animation: fadeIn 0.5s ease;
+            min-height: 0; /* 确保flex子项能正确收缩 */
+        }
+        .result-area.show {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-width: 0; /* 防止grid项目溢出 */
+        }
+        .image-panel, .ocr-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* 允许面板收缩 */
+            min-width: 0; /* 防止grid项目溢出 */
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .panel-title {
+            font-size: 1.3rem;
+            color: #28a745;
+            margin-left: 0.5rem;
+        }
+        .panel-icon {
+            font-size: 1.5rem;
+            color: #28a745;
+        }
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 400px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow: auto;
+        }
+        .image-container img {
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+        }
+        .ocr-content {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            overflow: auto;
+            color: #333;
+            word-break: break-word;
+            min-width: 0; /* 防止flex项目溢出 */
+            position: relative;
+        }
+        .ocr-content.text-view {
+            position: relative;
+            white-space: nowrap;
+        }
+        .ocr-content.json-view {
+            white-space: pre;
+        }
+        .ocr-canvas {
+            position: relative;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            overflow: auto;
+            min-height: 200px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .ocr-text-block {
+            position: absolute;
+            font-size: 14px;
+            line-height: 1.2;
+            color: #333;
+            cursor: default;
+            white-space: nowrap;
+            user-select: text;
+            max-width: 100vw; /* 防止文本块过宽 */
+        }
+        .view-toggle {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+            transition: all 0.2s;
+            border-radius: 0;
+        }
+        .toggle-btn:hover {
+            background: rgba(40, 167, 69, 0.1);
+        }
+        .toggle-btn.active {
+            background: #28a745;
+            color: white;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #28a745;
+        }
+        .loading.show {
+            display: block;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #28a745;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        .nav-link {
+            color: #ffc107;
+            text-decoration: none;
+            margin-left: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.3);
+            color: #fff;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 968px) {
+            .result-area.show {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .upload-box {
+                padding: 2rem 1rem;
+                min-width: 250px;
+            }
+            .upload-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <h1 style="margin: 0;">OCR图片识别</h1>
+                <a href="/" class="nav-link">返回首页</a>
+            </div>
+            <p>上传图片进行文字识别，支持多种图片格式</p>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-box" id="uploadBox">
+                <input type="file" id="fileInput" accept="image/*">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">点击上传图片</div>
+                <div class="upload-hint">支持 JPG、PNG、GIF 等常见图片格式</div>
+            </div>
+        </div>
+
+        <div class="upload-notice">
+            <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: -0.5rem; margin-bottom: 1rem;">
+                ⚠️ 该功能仅用于演示，要求图片大小在15KB以下
+            </p>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            正在进行OCR识别，请稍候...
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="result-area" id="resultArea">
+            <div class="image-panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🖼️</span>
+                    <h2 class="panel-title">原始图片</h2>
+                </div>
+                <div class="image-container">
+                    <img id="originalImage" src="" alt="上传的图片">
+                </div>
+            </div>
+
+            <div class="ocr-panel">
+                <div class="panel-header">
+                    <div style="display: flex; align-items: center;">
+                        <span class="panel-icon">📝</span>
+                        <h2 class="panel-title">识别结果</h2>
+                    </div>
+                    <div class="view-toggle" id="viewToggle">
+                        <button class="toggle-btn active" data-view="text">文本</button>
+                        <button class="toggle-btn" data-view="json">原始</button>
+                    </div>
+                </div>
+                <div class="ocr-content text-view" id="ocrContent">
+                    识别结果将显示在这里...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBox = document.getElementById('uploadBox');
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const resultArea = document.getElementById('resultArea');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const originalImage = document.getElementById('originalImage');
+            const ocrContent = document.getElementById('ocrContent');
+            const viewToggle = document.getElementById('viewToggle');
+            const toggleBtns = viewToggle.querySelectorAll('.toggle-btn');
+
+            let currentView = 'text';
+            let currentResult = null; // 存储最新的OCR结果
+
+            // 视图切换功能
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const view = this.dataset.view;
+                    if (view !== currentView) {
+                        // 更新按钮状态
+                        toggleBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+
+                        // 更新视图
+                        currentView = view;
+                        ocrContent.classList.remove('text-view', 'json-view');
+                        ocrContent.classList.add(view + '-view');
+
+                        // 如果有结果数据，重新显示
+                        if (currentResult) {
+                            displayOCRResult(currentResult);
+                        }
+                    }
+                });
+            });
+
+            // 点击上传框触发文件选择
+            uploadBox.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // 拖拽上传支持
+            uploadBox.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#20c997';
+                this.style.background = '#f8fff9';
+            });
+
+            uploadBox.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#28a745';
+                this.style.background = 'white';
+            });
+
+            uploadBox.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#28a745';
+                this.style.background = 'white';
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            // 文件选择处理
+            fileInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            // 处理上传的文件
+            function handleFile(file) {
+                // 检查文件类型
+                if (!file.type.startsWith('image/')) {
+                    showError('请选择有效的图片文件');
+                    return;
+                }
+
+                // 检查文件大小 (限制为15KB)
+                if (file.size > 15 * 1024) {
+                    showError('图片文件大小不能超过15KB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageSrc = e.target.result;
+                    displayImage(imageSrc);
+                    performOCR(imageSrc);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // 显示上传的图片
+            function displayImage(imageSrc) {
+                originalImage.src = imageSrc;
+
+                // 动画效果：上传按钮移动到下方
+                uploadArea.classList.add('uploaded');
+
+                // 显示结果区域
+                setTimeout(() => {
+                    resultArea.classList.add('show');
+                }, 300);
+            }
+
+            // 执行OCR识别
+            async function performOCR(imageSrc) {
+                loading.classList.add('show');
+                errorMessage.classList.remove('show');
+                ocrContent.textContent = '正在识别中...';
+
+                try {
+                    // 提取base64数据（去除data:image前缀）
+                    const base64Data = imageSrc.split(',')[1];
+
+                    const response = await fetch('/ocr/demo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            image: base64Data
+                        })
+                    });
+
+                    const result = await response.json();
+                    loading.classList.remove('show');
+
+                    if (response.ok && result.errcode === 0) {
+                        displayOCRResult(result);
+                    } else {
+                        showError(result.msg || 'OCR识别失败：' + (result.error || '未知错误'));
+                    }
+                } catch (error) {
+                    loading.classList.remove('show');
+                    showError('网络错误：' + error.message);
+                }
+            }
+
+            // 显示OCR识别结果
+            function displayOCRResult(result) {
+                // 存储结果数据
+                currentResult = result;
+
+                if (currentView === 'text') {
+                    // 文本视图：根据位置信息还原显示
+                    displayTextWithPosition(result);
+                } else {
+                    // 原始视图：显示格式化的JSON结果
+                    ocrContent.textContent = JSON.stringify(result, null, 2);
+                }
+            }
+
+            // 根据位置信息显示文本
+            function displayTextWithPosition(result) {
+                ocrContent.innerHTML = '';
+
+                if (!result.ocr_response || result.ocr_response.length === 0) {
+                    ocrContent.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">未识别到文字内容</div>';
+                    return;
+                }
+
+                // 创建画布容器
+                const canvas = document.createElement('div');
+                canvas.className = 'ocr-canvas';
+
+                // 计算所有文本块的位置范围
+                let minLeft = Infinity;
+                let minTop = Infinity;
+                let maxRight = 0;
+                let maxBottom = 0;
+
+                result.ocr_response.forEach(item => {
+                    const left = item.left || 0;
+                    const top = item.top || 0;
+                    const right = item.right || 0;
+                    const bottom = item.bottom || 0;
+
+                    minLeft = Math.min(minLeft, left);
+                    minTop = Math.min(minTop, top);
+                    maxRight = Math.max(maxRight, right);
+                    maxBottom = Math.max(maxBottom, bottom);
+                });
+
+                const containerWidth = ocrContent.clientWidth || 500;
+                const containerHeight = ocrContent.clientHeight || 400;
+
+                // 根据OCR坐标范围设置画布尺寸
+                const padding = 40;
+                const contentWidth = maxRight - minLeft;
+                const contentHeight = maxBottom - minTop;
+
+                // 设置画布尺寸，确保内容完整显示
+                const canvasWidth = contentWidth + padding * 2;
+                const canvasHeight = contentHeight + padding * 2;
+
+                canvas.style.width = canvasWidth + 'px';
+                canvas.style.height = canvasHeight + 'px';
+
+                // 不使用缩放，让画布保持原始尺寸，通过滚动条查看超出部分
+                const scale = 1;
+
+                        // 添加文本块到画布
+                result.ocr_response.forEach((item, index) => {
+                    const textBlock = document.createElement('div');
+                    textBlock.className = 'ocr-text-block';
+                    textBlock.textContent = item.text;
+
+                    // 调整位置，考虑偏移量和最终的缩放
+                    const adjustedLeft = ((item.left || 0) - minLeft + padding) * scale;
+                    const adjustedTop = ((item.top || 0) - minTop + padding) * scale;
+
+                    textBlock.style.left = adjustedLeft + 'px';
+                    textBlock.style.top = adjustedTop + 'px';
+
+                    // 根据识别置信度调整透明度
+                    const confidence = item.rate || 1;
+                    textBlock.style.opacity = 0.7 + (confidence * 0.3);
+
+                    canvas.appendChild(textBlock);
+                });
+
+                ocrContent.appendChild(canvas);
+            }
+
+            // 显示错误信息
+            function showError(message) {
+                loading.classList.remove('show');
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+                ocrContent.textContent = '识别失败，请重试';
+            }
+        });
+    </script>
+</body>
+</html>

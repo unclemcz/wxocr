@@ -112,12 +112,30 @@
             color: #666;
             border-top: 1px solid #eee;
         }
+        .header-link {
+            margin-left: 2rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        .header-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
             }
             .header h1 {
                 font-size: 2rem;
+            }
+            .header-link {
+                margin-left: 1rem;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -128,6 +146,7 @@
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
                 <img src="{{ url_for('static', filename='wxocr-icon.svg') }}" alt="WXOCR Icon" style="width: 80px; height: 80px; margin-right: 1rem;">
                 <h1 style="margin: 0;">WXOCR</h1>
+                <a href="/ocr" class="header-link">🔍 在线识别DEMO</a>
             </div>
             <p>基于微信OCR引擎的图像文字识别服务</p>
             <p style="color: #ffcc00; font-weight: bold; margin-top: 1rem;">⚠️ 注意：CPU需要支持avx2，否则服务无法运行</p>
